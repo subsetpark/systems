@@ -23,7 +23,7 @@ run_rules([Rule|Rules], State) ->
             run_rules(Rules, State)
     end.
 
--spec match(rule(), state()) -> {boolean(), state()} | atom().
+-spec match(rule(), state()) -> {true, state()} | false.
 match({[P|Ps], Tag}, [P|Ss]) ->
     match({Ps, Tag},  Ss);
 match({[], _}, Ss) ->
