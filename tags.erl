@@ -1,4 +1,4 @@
--module(tag_systems).
+-module(tags).
 -export([tags/3]).
 
 -type tag() :: [0..1].
