@@ -1,5 +1,5 @@
 -module(ca_tools).
--export([iterate/3, make_rule/1, make_state/1, random_state/1]).
+-export([iterate/3, make_rule/2, make_state/1, random_state/1]).
 
 -spec iterate(ca:state(), [ca:rule()], non_neg_integer()) -> ca:state().
 iterate(State, _, 0) ->
@@ -15,20 +15,22 @@ render(S) ->
 render_cell(Cell) when Cell == 0 -> $\s;
 render_cell(Cell) when Cell == 1 -> $#.
 
--define(RULES, [[1, 1, 1], [1, 1, 0], [1, 0, 1], [1, 0, 0],
-                [0, 1, 1], [0, 1, 0], [0, 0, 1], [0, 0, 0]]).
+-spec make_rule(integer(), non_neg_integer()) -> ca:rule().
+make_rule(N, Bits) when N > 0, N < 256 ->
+    Template = [binary_expansion(K, log2(Bits)) || K <- lists:seq(Bits-1, 0, -1)],
+    lists:zip(Template, binary_expansion(N, Bits)).
 
--spec make_rule(integer()) -> ca:rule().
-make_rule(N) when N > 0, N < 256 ->
+log2(X) ->
+  round(math:log(X) / math:log(2)).
+
+binary_expansion(N, Bits) ->
     Unpadded = hd(io_lib:format("~.2B", [N])),
-    Bstring = string:right(Unpadded, 8, $0),
-    lists:zipwith(fun(Digit, Rule) ->
-                          {Int, []} = string:to_integer([Digit]),
-                          case Int of
-                              error -> error(bad_rule);
-                              _ -> {Rule, Int}
-                          end
-                  end, Bstring, ?RULES).
+    Bstring = string:right(Unpadded, Bits, $0),
+    F = fun(Digit) -> 
+                {Int, []} = string:to_integer([Digit]),
+                Int
+        end,
+    lists:map(F, Bstring).
 
 -spec make_state(integer()) -> ca:state().
 make_state(N) ->
