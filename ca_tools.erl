@@ -9,7 +9,7 @@ iterate(State, Rules, N) ->
     render(Generation),
     iterate(Generation, Rules, N - 1).
 
--spec render(ca:state()) -> string().
+-spec render(ca:state()) -> ok.
 render(S) ->
     io:format("~p~n", [[render_cell(D) || D <- S]]).
 render_cell(Cell) when Cell == 0 -> $\s;
@@ -17,11 +17,9 @@ render_cell(Cell) when Cell == 1 -> $#.
 
 -spec make_rule(integer(), non_neg_integer()) -> ca:rule().
 make_rule(N, Bits) when N > 0, N < 256 ->
-    Template = [binary_expansion(K, log2(Bits)) || K <- lists:seq(Bits-1, 0, -1)],
-    lists:zip(Template, binary_expansion(N, Bits)).
-
-log2(X) ->
-  round(math:log(X) / math:log(2)).
+    Max = round(math:pow(2, Bits)),
+    Template = [binary_expansion(K, Bits) || K <- lists:seq(Max-1, 0, -1)],
+    lists:zip(Template, binary_expansion(N, Max)).
 
 binary_expansion(N, Bits) ->
     Unpadded = hd(io_lib:format("~.2B", [N])),
