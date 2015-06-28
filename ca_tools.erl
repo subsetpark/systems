@@ -15,8 +15,8 @@ render(S) ->
 render_cell(Cell) when Cell == 0 -> $\s;
 render_cell(Cell) when Cell == 1 -> $#.
 
--define(RULES, [[1,1,1], [1,1,0], [1,0,1], [1,0,0],
-                [0,1,1], [0,1,0], [0,0,1], [0,0,0]]).
+-define(RULES, [[1, 1, 1], [1, 1, 0], [1, 0, 1], [1, 0, 0],
+                [0, 1, 1], [0, 1, 0], [0, 0, 1], [0, 0, 0]]).
 
 -spec make_rule(integer()) -> ca:rule().
 make_rule(N) when N > 0, N < 256 ->
