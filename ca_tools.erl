@@ -1,5 +1,5 @@
 -module(ca_tools).
--export([iterate/3, make_rule/2, make_state/1, random_state/1]).
+-export([iterate/3, make_rule/2, make_state/1, random_state/1, render_cell/1]).
 
 -spec iterate(ca:state(), [ca:rule()], non_neg_integer()) -> ca:state().
 iterate(State, _, 0) ->
@@ -16,7 +16,7 @@ render_cell(Cell) when Cell == 0 -> $\s;
 render_cell(Cell) when Cell == 1 -> $#.
 
 -spec make_rule(integer(), non_neg_integer()) -> ca:rule().
-make_rule(N, Bits) when N > 0, N < 256 ->
+make_rule(N, Bits) ->
     Max = round(math:pow(2, Bits)),
     Template = [binary_expansion(K, Bits) || K <- lists:seq(Max-1, 0, -1)],
     lists:zip(Template, binary_expansion(N, Max)).
@@ -24,7 +24,7 @@ make_rule(N, Bits) when N > 0, N < 256 ->
 binary_expansion(N, Bits) ->
     Unpadded = hd(io_lib:format("~.2B", [N])),
     Bstring = string:right(Unpadded, Bits, $0),
-    F = fun(Digit) -> 
+    F = fun(Digit) ->
                 {Int, []} = string:to_integer([Digit]),
                 Int
         end,

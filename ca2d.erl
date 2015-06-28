@@ -1,5 +1,5 @@
 -module(ca2d).
--export([process_state/2, random_state/1]).
+-export([process_state/2, random_state/1, render_grid/1]).
 
 -spec process_state(grids:grid(), [ca:rule()]) -> grids:grid().
 process_state(State, Rules) ->
@@ -21,3 +21,10 @@ random_state(N) ->
                 grids:set_cell(K, Grid, Value)
         end,
     lists:foldl(F, NewGrid, lists:seq(0, N * N)).
+
+render_grid(Grid) ->
+    array:map(fun(_, Value) -> render_row(Value) end, Grid),
+    ok.
+render_row(Row) ->
+   Rendered = array:map(fun(_, Value) -> ca_tools:render_cell(Value) end, Row),
+   io:format("~p~n", [array:to_list(Rendered)]).
