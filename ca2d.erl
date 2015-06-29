@@ -5,7 +5,7 @@
 process_state(State, Rules) ->
     process_state(State, Rules, grids:new_grid(array:size(State)), 1).
 process_state(State, Rules, Out, N) ->
-    case array:size(State) * array:size(State) of
+    case round(math:pow(array:size(State), 2)) of
         N -> Out;
         _ ->
             Neighborhood = grids:get_neighborhood(N, State),
