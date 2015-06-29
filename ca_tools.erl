@@ -1,5 +1,21 @@
 -module(ca_tools).
--export([iterate/3, make_rule/2, make_state/1, random_state/1, render_cell/1]).
+-export([start/4, render_cell/1]).
+
+-type automaton() :: elementary | von_neumann.
+
+-spec start(automaton(), {random | origin, integer()}, integer(), non_neg_integer()) -> ca:state().
+start(AutomatonType, {StateType, StateSize}, RuleNumber, Iterations) ->
+    State = case StateType of
+                origin -> make_state(StateSize);
+                random -> random_state(StateSize)
+            end,
+    Bits = case AutomatonType of
+               elementary -> 3;
+               von_neumann -> 5
+           end,
+    Rules = make_rule(RuleNumber, Bits),
+    iterate(State, Rules, Iterations).
+
 
 -spec iterate(ca:state(), [ca:rule()], non_neg_integer()) -> ca:state().
 iterate(State, _, 0) ->
