@@ -38,10 +38,10 @@ make_state(Type, N) ->
             [random:uniform(2) - 1 || _ <- lists:seq(1, N)]
     end.
 
-get_start() -> {{bits, 3}, {make_state, fun make_state/2}}.
-
 -spec render(ca:state()) -> ok.
 render(S) ->
         io:format("~p~n", [[render_cell(D) || D <- S]]).
 render_cell(Cell) when Cell == 0 -> $\s;
 render_cell(Cell) when Cell == 1 -> $#.
+
+get_start() -> {{bits, 3}, {make_state, fun make_state/2}}.

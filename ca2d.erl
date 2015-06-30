@@ -12,6 +12,7 @@ process_state(State, Rules, Out, N) ->
              process_state(State, Rules, grids:set_cell(N, Out, R), N+1)
     end.
 
+-spec make_state(origin | random, integer()) -> grids:grid().
 make_state(Type, N) ->
     NewGrid = grids:new_grid(N),
     case Type of
@@ -26,6 +27,7 @@ make_state(Type, N) ->
             lists:foldl(F, NewGrid, lists:seq(0, (N * N) -1))
     end.
 
+-spec render(grids:grid()) -> ok.
 render(Grid) ->
     io:format("\e[H\e[J"),
     array:map(fun(_, Value) -> render_row(Value) end, Grid),
