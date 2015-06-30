@@ -1,35 +1,28 @@
 -module(ca_tools).
--export([start/4, render_cell/1]).
+-export([start/4]).
 
 -type automaton() :: elementary | von_neumann.
+-type state_type() :: random | origin.
 
--spec start(automaton(), {random | origin, integer()}, integer(), non_neg_integer()) -> ca:state().
+-spec start(automaton(), {state_type(), integer()}, integer(), non_neg_integer()) -> ca:state().
 start(AutomatonType, {StateType, StateSize}, RuleNumber, Iterations) ->
-    State = case StateType of
-                origin -> make_state(StateSize);
-                random -> random_state(StateSize)
-            end,
-    Bits = case AutomatonType of
-               elementary -> 3;
-               von_neumann -> 5
-           end,
+    CaModule = case AutomatonType of 
+                   elementary -> ca;
+                   von_neumann -> ca2d
+               end,
+    {{bits, Bits}, {make_state, StateGenerator}} = CaModule:get_start(),
+    State = StateGenerator(StateType, StateSize),
     Rules = make_rule(RuleNumber, Bits),
-    iterate(State, Rules, Iterations).
+    iterate(CaModule, State, Rules, Iterations).
 
 
--spec iterate(ca:state(), [ca:rule()], non_neg_integer()) -> ca:state().
-iterate(State, _, 0) ->
+-spec iterate(module(), ca:state(), [ca:rule()], non_neg_integer()) -> ca:state().
+iterate(_, State, _, 0) ->
     State;
-iterate(State, Rules, N) ->
-    Generation = ca:process_state(State, Rules),
-    render(Generation),
-    iterate(Generation, Rules, N - 1).
-
--spec render(ca:state()) -> ok.
-render(S) ->
-    io:format("~p~n", [[render_cell(D) || D <- S]]).
-render_cell(Cell) when Cell == 0 -> $\s;
-render_cell(Cell) when Cell == 1 -> $#.
+iterate(CaModule, State, Rules, N) ->
+    Generation = CaModule:process_state(State, Rules),
+    CaModule:render(Generation),
+    iterate(CaModule, Generation, Rules, N - 1).
 
 -spec make_rule(integer(), non_neg_integer()) -> ca:rule().
 make_rule(N, Bits) ->
@@ -46,11 +39,4 @@ binary_expansion(N, Bits) ->
         end,
     lists:map(F, Bstring).
 
--spec make_state(integer()) -> ca:state().
-make_state(N) ->
-    lists:duplicate(N div 2, 0) ++ [1] ++ lists:duplicate(N div 2, 0).
 
--spec random_state(integer()) -> ca:state().
-random_state(N) ->
-    random:seed(os:timestamp()),
-    [random:uniform(2) - 1 || _ <- lists:seq(1, N)].

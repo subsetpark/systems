@@ -23,12 +23,9 @@ set_coords(X, Y, Grid, Value) ->
     array:set(Y, NewRow, Grid).
 
 get_coords(N, Grid) ->
-    CoordString = string:right(integer_to_list(N, array:size(Grid)), 2, $0),
-    CoordList = lists:map(fun(D) -> 
-                      {Int, []} = string:to_integer([D]),
-                      Int
-              end, CoordString),
-    list_to_tuple(CoordList).
+    Base = array:size(Grid),
+    {N rem Base,
+     N div Base}.
 
 new_array(N, Default) ->
     array:new(N, [{fixed, true}, {default, Default}]).
@@ -40,5 +37,6 @@ get_neighborhood(N, Grid) ->
     {X, Y} = get_coords(N, Grid),
     [mod_get_cell(X2, Y2, Grid) ||
      {X2, Y2} <- [{X, Y}, {X - 1, Y}, {X + 1, Y}, {X, Y -1}, {X, Y + 1}]].
+
 
 
