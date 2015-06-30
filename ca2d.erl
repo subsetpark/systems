@@ -23,13 +23,13 @@ make_state(Type, N) ->
                         Value = random:uniform(2) - 1,
                         grids:set_cell(K, Grid, Value)
                 end,
-            lists:foldl(F, NewGrid, lists:seq(0, N * N))
+            lists:foldl(F, NewGrid, lists:seq(0, (N * N) -1))
     end.
 
 render(Grid) ->
     io:format("\e[H\e[J"),
     array:map(fun(_, Value) -> render_row(Value) end, Grid),
-    timer:sleep(100),
+    timer:sleep(50),
     ok.
 render_row(Row) ->
     Rendered = array:map(fun(_, Value) -> ca:render_cell(Value) end, Row),
