@@ -6,7 +6,7 @@
 -type state() :: [cell()].
 -type rule() :: {state(), cell()}.
 
--spec apply_rules(state(), [rule()]) -> cell().
+-spec apply_rules(Pattern, [{Pattern, Output}]) -> Output.
 apply_rules(Neighborhood, [{Neighborhood, R}|_]) ->
     R;
 apply_rules(Neighborhood, [_|Rules]) ->

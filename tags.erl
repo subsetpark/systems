@@ -1,37 +1,35 @@
 -module(tags).
--export([tags/3]).
+-export([process_state/2, make_state/2, make_system/2]).
 
--type tag() :: [0..1].
--type rule() :: {tag(), tag()}.
--type ruleset() :: [rule()].
--type state() :: [0..1].
+-type tag_system() :: {drop_number(), alphabet(), [rule()]}.
+-type drop_number() :: non_neg_integer().
+-type alphabet() :: {symbol()}.
+-type rule() :: {symbol(), state()}.
+-type symbol() :: atom().
+-type state() :: [symbol()].
 
--spec tags(ruleset(), state(), integer()) -> state().
-tags(_, State, 0) ->
+-spec process_state(state(), tag_system()) -> state().
+process_state(['H'|_]=State, _) ->
     State;
-tags(Rules, State, Iterations) ->
-    tags(Rules, run_rules(Rules, State), Iterations - 1).
+process_state([H|_]=State, {Drop, _, Rules}=System) ->
+    R = ca:apply_rules(H, Rules),
+    process_state(lists:nthtail(Drop, State) ++ R, System).
 
--spec run_rules([rule()], state()) -> state().
-run_rules([], State) ->
-    State;
-run_rules([Rule|Rules], State) ->
-    case match(Rule, State) of
-        {true, Ss} ->
-            run_rules(Rules, apply_rule(Rule, Ss));
-        _ ->
-            run_rules(Rules, State)
-    end.
+-spec make_state(non_neg_integer(), tag_system()) -> state().
+make_state(Size, {_, Alphabet, _}) ->
+    N = tuple_size(Alphabet),
+    [element(random:uniform(N), Alphabet) || _ <- lists:seq(1, Size)].
 
--spec match(rule(), state()) -> {true, state()} | false.
-match({[P|Ps], Tag}, [P|Ss]) ->
-    match({Ps, Tag},  Ss);
-match({[], _}, Ss) ->
-    {true, Ss};
-match(_, _) ->
-    false.
+-spec make_system(drop_number(), [rule()]) -> tag_system().
+make_system(Drop, Rules) ->
+    Alphabet = get_alphabet(Rules),
+    {Drop, Alphabet, Rules}.
 
--spec apply_rule(rule(), state()) -> state().
-apply_rule({_, Tag}, State) ->
-    State ++ Tag.
-    
+-spec get_alphabet([rule()]) -> alphabet().
+get_alphabet(Rules) ->
+    get_alphabet(Rules, []).
+get_alphabet([], Out) ->
+    list_to_tuple(lists:reverse(['H'|Out]));
+get_alphabet([{Symbol, _}|Rules], Out) ->
+    get_alphabet(Rules, [Symbol|Out]).
+
