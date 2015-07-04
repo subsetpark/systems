@@ -28,7 +28,7 @@ mod_nth(N, L) -> lists:nth(mod(N, length(L)), L).
 mod(X, Y) when X == 0; X==Y -> Y;
 mod(X, Y) -> (X rem Y + Y) rem Y.
 
--spec make_state(origin | random, integer()) -> ca:state().
+-spec make_state(origin | random, integer()) -> state().
 make_state(Type, N) ->
     case Type of
         origin ->
@@ -38,7 +38,7 @@ make_state(Type, N) ->
             [random:uniform(2) - 1 || _ <- lists:seq(1, N)]
     end.
 
--spec render(ca:state()) -> ok.
+-spec render(state()) -> ok.
 render(S) ->
         io:format("~p~n", [[render_cell(D) || D <- S]]).
 render_cell(Cell) when Cell == 0 -> $\s;
