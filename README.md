@@ -7,4 +7,4 @@ This is an exploration of cellular systems in Erlang. There are three types of s
 - elementary cellular automata;
 - von neumann cellular automata.
 
-![screenshot](https://www.dropbox.com/s/humpp5o5xwl44ce/ca_screenshot.png?dl=0)
+![screenshot](https://www.dropbox.com/s/humpp5o5xwl44ce/ca_screenshot.png?dl=1)
